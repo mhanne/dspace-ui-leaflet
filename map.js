@@ -8,14 +8,16 @@ var Map = Backbone.View.extend({
       zoomControl: false
     });
 
-    var basemap = new L.TileLayer(this.config.basemap.template, {
-      maxZoom : this.config.basemap.maxZoom
-    }).addTo(this.frame);
-
     var zoomControl = new L.Control.Zoom({ position: 'topright' }).addTo(this.frame);
 
-    this.frame.poisControl = new L.Control.Layers({ "OpenStreetMap": basemap }, undefined, { collapsed: true, position: 'topleft' }).addTo(this.frame);
+    basemaps = {}
+    for(i in this.config.basemaps) {
+      config = this.config.basemaps[i];
+      basemaps[config.name] = new L.TileLayer(config.template, { maxZoom : config.maxZoom });
+      if(i == 0) { basemaps[config.name].addTo(this.frame); }
+    }
 
+    this.frame.poisControl = new L.Control.Layers(basemaps, undefined, { collapsed: true, position: 'topleft' }).addTo(this.frame);
   }
 });
 
